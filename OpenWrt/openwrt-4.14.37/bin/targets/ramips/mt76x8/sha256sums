@@ -1,0 +1,4 @@
+7ee417aa39745e5376d80384b69dd1627cc69a1e8793ceb29b5a6b6b5a4db28b *config.seed
+6391857b086d2066656241562d6e8b9458bb35536950d4a7e41ca6a9d59df7a6 *openwrt-ramips-mt76x8-device-q500.manifest
+c6e71ee19271c61ebb16083cdb2b78194d4b5e750eb1b9e12e9726cff46249d7 *openwrt-ramips-mt76x8-q500-initramfs-kernel.bin
+5a5faf3bf06310121652585155ad3812094c841d1192931876f1263c8fc0fe74 *openwrt-ramips-mt76x8-q500-squashfs-sysupgrade.bin

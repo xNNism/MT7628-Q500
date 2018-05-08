@@ -1,0 +1,16 @@
+Package: nano
+Version: 2.9.6-1
+Depends: libc, libncurses
+Source: feeds/packages/utils/nano
+License: GPL-3.0+
+LicenseFiles: COPYING
+Section: utils
+Maintainer: Jonathan Bennett <JBennett@incomsystems.biz>, Hannu Nyman <hannu.nyman@iki.fi>
+Architecture: mipsel_24kc
+Installed-Size: 57553
+Filename: nano_2.9.6-1_mipsel_24kc.ipk
+Size: 58466
+SHA256sum: 4a85978189701c022f655c3bd3239566dcf73c1248b8eb4839fa468271808c30
+Description:  Nano (Nano's ANOther editor, or Not ANOther editor) is an enhanced clone
+ of the Pico text editor.
+
