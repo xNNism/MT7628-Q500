@@ -15,7 +15,7 @@ Flowcontrol: none
 #### Hardware
 
 ```
-Flash: Macronix MX25L12835F 128M-BIT FLASH MEMORY
+Flash: 16MB Macronix MX25L12805D 128M-BIT FLASH MEMORY
 Ram: Winbond W9751G6KB-25 DDR2-800 512Mb @ 1.8V
 ```
 
@@ -414,8 +414,8 @@ Port5 Good Pkt Cnt: RX=00000000 Tx=00000000 (Bad Pkt Cnt: Rx=00000000 Tx=0000000
 [   20.640000] RTMPSetDefaultChannel() : default channel to 1
 [   20.652000] load fw image from fw_header_image
 [   20.660000] AndesMTLoadFwMethod1(2174)::pChipCap->fw_len(63056)
-[   20.672000] FW Version:_e2_mp    
-[   20.676000] FW Build Date:20150211175503 
+[   20.672000] FW Version:_e2_mp
+[   20.676000] FW Build Date:20150211175503
 [   20.684000] CmdAddressLenReq:(ret = 0)
 [   20.696000] CmdFwStartReq: override = 1, address = 1048576
 [   20.704000] CmdStartDLRsp: WiFI FW Download Success
@@ -506,7 +506,7 @@ Port5 Good Pkt Cnt: RX=00000000 Tx=00000000 (Bad Pkt Cnt: Rx=00000000 Tx=0000000
 [   27.192000] hw/sw version =
 [   27.200000] ��
 [   27.204000] patch version =
-[   27.208000]    
+[   27.208000] 
 [   27.224000] FW Version:0.0.00 Build:1
 [   27.232000] Build Time:201410061140____
 [   27.240000] fw for E3 IC
