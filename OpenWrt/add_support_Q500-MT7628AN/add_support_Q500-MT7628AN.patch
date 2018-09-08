@@ -1,0 +1,863 @@
+From 9e56c928a2410c32e5fd4dc5f082b47fe0b6de0a Mon Sep 17 00:00:00 2001
+From: xNNism <xnnism@gmail.com>
+Date: Sat, 8 Sep 2018 11:53:43 +0200
+Subject: [PATCH] ramips: add support "Afoundry Q500"
+
+---
+ .../ramips/base-files/etc/board.d/02_network  |  36 +-
+ target/linux/ramips/base-files/etc/diag.sh    | 346 +++++++++++++++++-
+ target/linux/ramips/base-files/lib/ramips.sh  |   3 +
+ .../ramips/base-files/lib/upgrade/platform.sh |  23 +-
+ target/linux/ramips/dts/Q500-MT7628AN.dts     |  86 +++++
+ target/linux/ramips/image/mt76x8.mk           |  79 +---
+ 6 files changed, 452 insertions(+), 121 deletions(-)
+ create mode 100644 target/linux/ramips/dts/Q500-MT7628AN.dts
+
+diff --git a/target/linux/ramips/base-files/etc/board.d/02_network b/target/linux/ramips/base-files/etc/board.d/02_network
+index 9e9ecbcb51d..a0a71b55ae4 100755
+--- a/target/linux/ramips/base-files/etc/board.d/02_network
++++ b/target/linux/ramips/base-files/etc/board.d/02_network
+@@ -49,17 +49,14 @@ ramips_setup_interfaces()
+ 	dcs-930|\
+ 	dcs-930l-b1|\
+ 	ht-tm02|\
+-	kimax,u35wf|\
+ 	linkits7688 | \
+ 	m2m|\
+ 	microwrt|\
+-	mikrotik,rbm11g|\
+ 	mpr-a2|\
+ 	ncs601w|\
+ 	omega2 | \
+ 	omega2p | \
+ 	timecloud|\
+-	tplink,tl-wa801nd-v5|\
+ 	w150m|\
+ 	widora,neo-16m|\
+ 	widora,neo-32m|\
+@@ -85,7 +82,6 @@ ramips_setup_interfaces()
+ 	dir-320-b1|\
+ 	dir-610-a1|\
+ 	dir-615-h1|\
+-	dir-810l|\
+ 	dlink,dwr-116-a1|\
+ 	dlink,dwr-921-c1|\
+ 	ew1200|\
+@@ -101,10 +97,10 @@ ramips_setup_interfaces()
+ 	miwifi-nano|\
+ 	mt7621|\
+ 	mt7628|\
++	q500-mt7628an|\
+ 	mzk-750dhp|\
+ 	mzk-w300nh2|\
+ 	d-team,newifi-d2|\
+-	netgear,r6120|\
+ 	nixcore-x1-8M|\
+ 	nixcore-x1-16M|\
+ 	oy-0001|\
+@@ -150,7 +146,6 @@ ramips_setup_interfaces()
+ 	pbr-d1|\
+ 	ravpower,wd03|\
+ 	tama,w06|\
+-	tplink,tl-mr3020-v3|\
+ 	u25awf-h1|\
+ 	wli-tx4-ag300n|\
+ 	wmdr-143n|\
+@@ -159,10 +154,6 @@ ramips_setup_interfaces()
+ 	wrh-300cr)
+ 		ucidef_set_interface_lan "eth0"
+ 		;;
+-	dlink,dwr-118-a2)
+-		ucidef_add_switch "switch0" \
+-			"1:lan:2" "2:lan:1" "3:lan:3" "4:lan" "0:wan" "6@eth0"
+-		;;
+ 	mir3g)
+ 		ucidef_add_switch "switch0" \
+ 			"2:lan:2" "3:lan:1" "1:wan" "6t@eth0"
+@@ -205,7 +196,6 @@ ramips_setup_interfaces()
+ 	gl-mt300n|\
+ 	gl-mt750|\
+ 	hg255d|\
+-	hiwifi,hc5861b|\
+ 	jhr-n805r|\
+ 	jhr-n825r|\
+ 	jhr-n926r|\
+@@ -228,8 +218,7 @@ ramips_setup_interfaces()
+ 	wrtnode2p | \
+ 	wrtnode2r | \
+ 	youhua,wr1200js|\
+-	zbt-wa05|\
+-	zyxel,keenetic-extra-ii)
++	zbt-wa05)
+ 		ucidef_add_switch "switch0" \
+ 			"1:lan" "2:lan" "3:lan" "4:lan" "0:wan" "6@eth0"
+ 		;;
+@@ -240,9 +229,6 @@ ramips_setup_interfaces()
+ 		;;
+ 	dir-860l-b1|\
+ 	elecom,wrc-1167ghbk2-s|\
+-	elecom,wrc-2533gst|\
+-	elecom,wrc-1900gst|\
+-	iodata,wn-ax1167gr|\
+ 	iodata,wn-gx300gr)
+ 		ucidef_add_switch "switch0" \
+ 			"1:lan:4" "2:lan:3" "3:lan:2" "4:lan:1" "0:wan" "6@eth0"
+@@ -291,11 +277,6 @@ ramips_setup_interfaces()
+ 		ucidef_add_switch "switch1" \
+ 			"0:lan" "1:lan" "2:lan" "3:lan" "4:wan" "6@eth0"
+ 		;;
+-	edimax,br-6478ac-v2|\
+-	tplink,c2-v1)
+-		ucidef_add_switch "switch1" \
+-			"1:lan" "2:lan" "3:lan" "4:lan" "0:wan" "6@eth0"
+-		;;
+ 	hc5*61|\
+ 	y1s)
+ 		ucidef_add_switch "switch0" \
+@@ -392,7 +373,7 @@ ramips_setup_interfaces()
+ 		;;
+ 	wizfi630a)
+ 		ucidef_add_switch "switch0" \
+-			"0:lan" "1:lan" "2:wan" "6@eth0"
++			"1:lan" "2:lan" "0:wan" "6@eth0"
+ 		;;
+ 	wt3020-4M|\
+ 	wt3020-8M)
+@@ -469,7 +450,6 @@ ramips_setup_macs()
+ 		wan_mac=$(mtd_get_mac_ascii factory wanmac)
+ 		;;
+ 	dlink,dwr-116-a1|\
+-	dlink,dwr-118-a2|\
+ 	dlink,dwr-921-c1)
+ 		wan_mac=$(jboot_config_read -m -i $(find_mtd_part "config") -o 0xE000)
+ 		lan_mac=$(macaddr_add "$wan_mac" 1)
+@@ -477,13 +457,7 @@ ramips_setup_macs()
+ 	e1700)
+ 		wan_mac=$(mtd_get_mac_ascii config WAN_MAC_ADDR)
+ 		;;
+-	edimax,br-6478ac-v2)
+-		lan_mac=$(cat /sys/class/net/eth0/address)
+-		wan_mac=$(macaddr_add "$lan_mac" 2)
+-		;;
+ 	elecom,wrc-1167ghbk2-s|\
+-	elecom,wrc-2533gst|\
+-	elecom,wrc-1900gst|\
+ 	sk-wb8)
+ 		wan_mac=$(mtd_get_mac_binary factory 57350)
+ 		;;
+@@ -493,13 +467,11 @@ ramips_setup_macs()
+ 		;;
+ 	hc5*61|\
+ 	hc5661a|\
+-	hc5962|\
+-	hiwifi,hc5861b)
++	hc5962)
+ 		lan_mac=`mtd_get_mac_ascii bdinfo "Vfac_mac "`
+ 		[ -n "$lan_mac" ] || lan_mac=$(cat /sys/class/net/eth0/address)
+ 		wan_mac=$(macaddr_add "$lan_mac" 1)
+ 		;;
+-	iodata,wn-ax1167gr|\
+ 	iodata,wn-gx300gr)
+ 		wan_mac=$(macaddr_add "$(mtd_get_mac_binary Factory 4)" 1)
+ 		;;
+diff --git a/target/linux/ramips/base-files/etc/diag.sh b/target/linux/ramips/base-files/etc/diag.sh
+index d4318b61a74..e65614b7a9e 100644
+--- a/target/linux/ramips/base-files/etc/diag.sh
++++ b/target/linux/ramips/base-files/etc/diag.sh
+@@ -1,11 +1,355 @@
+ #!/bin/sh
+ # Copyright (C) 2010-2013 OpenWrt.org
+ 
++. /lib/functions.sh
+ . /lib/functions/leds.sh
+ 
+-status_led="$(get_dt_led status)"
++get_status_led() {
++	board=$(board_name)
++	boardname="${board##*,}"
++
++	case $board in
++	3g150b|\
++	3g300m|\
++	w150m)
++		status_led="$boardname:blue:ap"
++		;;
++	3g-6200n|\
++	ar670w|\
++	ar725w|\
++	br-6475nd|\
++	c50|\
++	dch-m225|\
++	dir-860l-b1|\
++	e1700|\
++	elecom,wrc-1167ghbk2-s|\
++	ex2700|\
++	ex3700|\
++	fonera20n|\
++	firewrt|\
++	hg255d|\
++	iodata,wn-gx300gr|\
++	kn|\
++	kn_rc|\
++	kn_rf|\
++	kng_rc|\
++	mzk-750dhp|\
++	mzk-dp150n|\
++	mzk-w300nh2|\
++	nbg-419n|\
++	nbg-419n2|\
++	pwh2004|\
++	r6220|\
++	tplink,c20-v4|\
++	tplink,c50-v3|\
++	tplink,tl-mr3420-v5|\
++	tplink,tl-wr842n-v5|\
++	tplink,tl-wr902ac-v3|\
++	tl-wr840n-v4|\
++	tl-wr840n-v5|\
++	tl-wr841n-v13|\
++	vr500|\
++	wnce2001|\
++	wndr3700v5|\
++	x5|\
++	x8|\
++	xdxrn502j|\
++	wn3000rpv3)
++		status_led="$boardname:green:power"
++		;;
++	3g-6200nl)
++		status_led="$boardname:green:internet"
++		;;
++	a5-v11|\
++	cs-qr10|\
++	d105|\
++	dcs-930l-b1|\
++	hlk-rm04|\
++	jhr-n825r|\
++	mpr-a1|\
++	mpr-a2|\
++	mzk-ex750np)
++		status_led="$boardname:red:power"
++		;;
++	ai-br100|\
++	ht-tm02)
++		status_led="$boardname:blue:wlan"
++		;;
++	alfa-network,ac1200rm|\
++	awapn2403|\
++	dir-645|\
++	sk-wb8|\
++	wrh-300cr)
++		status_led="$boardname:green:wps"
++		;;
++	alfa-network,awusfree1)
++		status_led="$boardname:orange:system"
++		;;
++	all0239-3g|\
++	dcs-930|\
++	dir-300-b1|\
++	dir-300-b7|\
++	dir-320-b1|\
++	dir-600-b1|\
++	dir-610-a1|\
++	dir-615-d|\
++	dir-615-h1|\
++	dir-620-a1|\
++	dir-620-d1|\
++	dwr-512-b|\
++	dlink,dwr-116-a1|\
++	gnubee,gb-pc1|\
++	gnubee,gb-pc2|\
++	hpm|\
++	hw550-3g|\
++	mac1200rv2|\
++	miniembwifi|\
++	mofi3500-3gn|\
++	rut5xx|\
++	v11st-fe|\
++	wmr-300|\
++	zbt-wg2626)
++		status_led="$boardname:green:status"
++		;;
++	dlink,dwr-921-c1)
++		status_led="$boardname:green:sigstrength"
++		;;
++	asl26555-8M|\
++	asl26555-16M)
++		status_led="asl26555:green:power"
++		;;
++	atp-52b|\
++	ew1200|\
++	ip2202)
++		status_led="$boardname:green:run"
++		;;
++	c108)
++		status_led="$boardname:green:lan"
++		;;
++	cf-wr800n|\
++	psg1208)
++		status_led="$boardname:white:wps"
++		;;
++	psg1218a|\
++	psg1218b)
++		status_led="$boardname:yellow:status"
++		;;
++	cy-swr1100|\
++	w502u|\
++	youhua,wr1200js)
++		status_led="$boardname:blue:wps"
++		;;
++	d240|\
++	dap-1350|\
++	na930|\
++	d-team,newifi-d2|\
++	pbr-m1|\
++	re350-v1|\
++	rt-ac51u|\
++	rt-n13u|\
++	rt-n14u|\
++	rt-n15|\
++	rt-n56u|\
++	tplink,c20-v1|\
++	wl-330n|\
++	wl-330n3g|\
++	wli-tx4-ag300n|\
++	y1|\
++	y1s|\
++	youku-yk1|\
++	zorlik,zl5900v2)
++		status_led="$boardname:blue:power"
++		;;
++	dlink,dap-1522-a1|\
++	phicomm,k2g|\
++	k2p|\
++	m3|\
++	mir3g|\
++	miwifi-nano)
++		status_led="$boardname:blue:status"
++		;;
++	db-wrt01|\
++	esr-9753|\
++	pbr-d1)
++		status_led="$boardname:orange:power"
++		;;
++	f5d8235-v1)
++		status_led="$boardname:blue:wired"
++		;;
++	f5d8235-v2)
++		status_led="$boardname:blue:router"
++		;;
++	f7c027|\
++	timecloud)
++		status_led="$boardname:orange:status"
++		;;
++	hc5*61|\
++	hc5661a|\
++	jhr-n805r|\
++	jhr-n926r|\
++	mlw221|\
++	mlwg2|\
++	vonets,var11n-300)
++		status_led="$boardname:blue:system"
++		;;
++	hc5962)
++		status_led="$boardname:white:status"
++		;;
++	linkits7688)
++		status_led="linkit-smart-7688:orange:wifi"
++		;;
++	m2m)
++		status_led="$boardname:blue:wifi"
++		;;
++	gl-mt300n-v2)
++		status_led="$boardname:green:power"
++		;;
++	m4-4M|\
++	m4-8M)
++		status_led="m4:blue:status"
++		;;
++	mikrotik,rbm33g)
++		status_led="rbm33g:green:usr"
++		;;
++	miwifi-mini|\
++	q500-mt7628an|\
++	zte-q7)
++		status_led="$boardname:red:status"
++		;;
++	mr-102n)
++		status_led="$boardname:amber:status"
++		;;
++	mr200)
++		status_led="$boardname:white:power"
++		;;
++	nw718)
++		status_led="$boardname:amber:cpu"
++		;;
++	newifi-d1)
++		status_led="$boardname:blue:status"
++		;;
++	omega2| \
++	omega2p)
++		status_led="$boardname:amber:system"
++		;;
++	oy-0001|\
++	sl-r7205)
++		status_led="$boardname:green:wifi"
++		;;
++	psr-680w)
++		status_led="$boardname:red:wan"
++		;;
++	px-4885-4M|\
++	px-4885-8M)
++		status_led="px-4885:orange:wifi"
++		;;
++	re6500|\
++	whr-1166d|\
++	whr-600d)
++		status_led="$boardname:orange:wifi"
++		;;
++	mzk-ex300np|\
++	rt-n10-plus|\
++	tew-638apb-v2|\
++	tew-691gr|\
++	tew-692gr|\
++	ur-326n4g|\
++	ur-336un|\
++	wf-2881)
++		status_led="$boardname:green:wps"
++		;;
++	rb750gr3)
++		status_led="$boardname:blue:pwr"
++		;;
++	sap-g3200u3)
++		status_led="$boardname:green:usb"
++		;;
++	u25awf-h1)
++		status_led="u25awf:red:wifi"
++		;;
++	u7621-06-256M-16M)
++		status_led="u7621-06:green:status"
++		;;
++	u7628-01-128M-16M)
++		status_led="u7628-01:green:power"
++		;;
++	v22rw-2x2)
++		status_led="$boardname:green:security"
++		;;
++	vocore-8M|\
++	vocore-16M)
++		status_led="vocore:green:status"
++		;;
++	vocore2)
++		status_led="$boardname:fuchsia:status"
++		;;
++	vocore2lite)
++		status_led="$boardname:green:status"
++		;;
++	w306r-v20|\
++	mqmaker,witi-256m|\
++	mqmaker,witi-512m|\
++	zbt-wr8305rt)
++		status_led="$boardname:green:sys"
++		;;
++	wcr-1166ds|\
++	whr-300hp2|\
++	wsr-1166|\
++	wsr-600)
++		status_led="$boardname:green:power"
++		;;
++	wcr-150gn|\
++	wl-351)
++		status_led="$boardname:amber:power"
++		;;
++	whr-g300n|\
++	wlr-6000|\
++	zbt-we2026)
++		status_led="$boardname:red:power"
++		;;
++	widora,neo-16m|\
++	widora,neo-32m)
++		status_led="widora:orange:wifi"
++		;;
++	wzr-agl300nh)
++		status_led="$boardname:green:router"
++		;;
++	wizfi630a)
++		status_led="$boardname::run"
++		;;
++	wr512-3gn-4M|\
++	wr512-3gn-8M)
++		status_led="wr512-3gn:green:wps"
++		;;
++	wrtnode2r | \
++	wrtnode2p | \
++	wrtnode)
++		status_led="wrtnode:blue:indicator"
++		;;
++	wt3020-4M|\
++	wt3020-8M)
++		status_led="wt3020:blue:power"
++		;;
++	zbt-cpe102)
++		status_led="$boardname:green:4g-0"
++		;;
++	zbt-we826-16M|\
++	zbt-we826-32M)
++		status_led="zbt-we826:green:power"
++		;;
++	zbtlink,zbt-we1226)
++		status_led="$boardname:green:wlan"
++		;;
++	zbt-wg3526-16M|\
++	zbt-wg3526-32M)
++		status_led="zbt-wg3526:green:status"
++		;;
++	esac
++}
+ 
+ set_state() {
++	get_status_led $1
++
+ 	case "$1" in
+ 	preinit)
+ 		status_led_blink_preinit
+diff --git a/target/linux/ramips/base-files/lib/ramips.sh b/target/linux/ramips/base-files/lib/ramips.sh
+index 5741cbd2ee1..5393823adf6 100755
+--- a/target/linux/ramips/base-files/lib/ramips.sh
++++ b/target/linux/ramips/base-files/lib/ramips.sh
+@@ -412,6 +412,9 @@ ramips_board_detect() {
+ 	*"PX-4885 (8M)")
+ 		name="px-4885-8M"
+ 		;;
++	*"Q500-MT7628AN")
++		name="q500-mt7628an"
++		;;
+ 	*"Q7")
+ 		name="zte-q7"
+ 		;;
+diff --git a/target/linux/ramips/base-files/lib/upgrade/platform.sh b/target/linux/ramips/base-files/lib/upgrade/platform.sh
+index 7558b4e3168..5cb1ad5fcbb 100755
+--- a/target/linux/ramips/base-files/lib/upgrade/platform.sh
++++ b/target/linux/ramips/base-files/lib/upgrade/platform.sh
+@@ -55,8 +55,6 @@ platform_check_image() {
+ 	duzun-dm06|\
+ 	e1700|\
+ 	elecom,wrc-1167ghbk2-s|\
+-	elecom,wrc-2533gst|\
+-	elecom,wrc-1900gst|\
+ 	esr-9753|\
+ 	ew1200|\
+ 	ex2700|\
+@@ -74,19 +72,16 @@ platform_check_image() {
+ 	hc5*61|\
+ 	hc5661a|\
+ 	hg255d|\
+-	hiwifi,hc5861b|\
+ 	hlk-rm04|\
+ 	hpm|\
+ 	ht-tm02|\
+ 	hw550-3g|\
+-	iodata,wn-ax1167gr|\
+ 	iodata,wn-gx300gr|\
+ 	ip2202|\
+ 	jhr-n805r|\
+ 	jhr-n825r|\
+ 	jhr-n926r|\
+ 	k2p|\
+-	kimax,u35wf|\
+ 	kn|\
+ 	kn_rc|\
+ 	kn_rf|\
+@@ -134,7 +129,7 @@ platform_check_image() {
+ 	psr-680w|\
+ 	px-4885-4M|\
+ 	px-4885-8M|\
+-	netgear,r6120|\
++	q500-mt7628an|\
+ 	rb750gr3|\
+ 	re6500|\
+ 	rp-n53|\
+@@ -232,7 +227,6 @@ platform_check_image() {
+ 	zbt-wr8305rt|\
+ 	zorlik,zl5900v2|\
+ 	zte-q7|\
+-	zyxel,keenetic-extra-ii|\
+ 	youku-yk1)
+ 		[ "$magic" != "27051956" ] && {
+ 			echo "Invalid image type."
+@@ -242,8 +236,7 @@ platform_check_image() {
+ 		;;
+ 	3g-6200n|\
+ 	3g-6200nl|\
+-	br-6475nd|\
+-	edimax,br-6478ac-v2)
++	br-6475nd)
+ 		[ "$magic" != "43535953" ] && {
+ 			echo "Invalid image type."
+ 			return 1
+@@ -261,13 +254,10 @@ platform_check_image() {
+ 	c20i|\
+ 	c50|\
+ 	mr200|\
+-	tplink,c2-v1|\
+ 	tplink,c20-v1|\
+ 	tplink,c20-v4|\
+ 	tplink,c50-v3|\
+-	tplink,tl-mr3020-v3|\
+ 	tplink,tl-mr3420-v5|\
+-	tplink,tl-wa801nd-v5|\
+ 	tplink,tl-wr842n-v5|\
+ 	tplink,tl-wr902ac-v3|\
+ 	tl-wr840n-v4|\
+@@ -291,7 +281,6 @@ platform_check_image() {
+ 		return 0
+ 		;;
+ 	dlink,dwr-116-a1|\
+-	dlink,dwr-118-a2|\
+ 	dlink,dwr-921-c1|\
+ 	dwr-512-b)
+ 		[ "$magic" != "0404242b" ] && {
+@@ -308,7 +297,6 @@ platform_check_image() {
+ 		nand_do_platform_check "$board" "$1"
+ 		return $?;
+ 		;;
+-	mikrotik,rbm11g|\
+ 	mikrotik,rbm33g|\
+ 	re350-v1)
+ 		[ "$magic" != "01000000" ] && {
+@@ -335,7 +323,6 @@ platform_pre_upgrade() {
+ 	local board=$(board_name)
+ 
+ 	case "$board" in
+-	mikrotik,rbm11g|\
+ 	mikrotik,rbm33g)
+ 		[ -z "$(rootfs_type)" ] && mtd erase firmware
+ 		;;
+@@ -369,3 +356,9 @@ platform_do_upgrade() {
+ 		;;
+ 	esac
+ }
++
++blink_led() {
++	. /etc/diag.sh; set_state upgrade
++}
++
++append sysupgrade_pre_upgrade blink_led
+diff --git a/target/linux/ramips/dts/Q500-MT7628AN.dts b/target/linux/ramips/dts/Q500-MT7628AN.dts
+new file mode 100644
+index 00000000000..ed5393fcadf
+--- /dev/null
++++ b/target/linux/ramips/dts/Q500-MT7628AN.dts
+@@ -0,0 +1,86 @@
++/dts-v1/;
++
++#include "mt7628an.dtsi"
++
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/input/input.h>
++
++/ {
++	compatible = "q500-mt7628an", "mt7628", "mediatek,mt7628an-soc";
++	model = "Afoundry Q500-MT7628an";
++	};
++
++&spi0 {
++	status = "okay";
++
++	m25p80@0 {
++		#address-cells = <1>;
++		#size-cells = <1>;
++		compatible = "jedec,spi-nor";
++		reg = <0>;
++		spi-max-frequency = <10000000>;
++		m25p,chunked-io = <32>;
++
++		partition@0 {
++			label = "u-boot";
++			reg = <0x0 0x30000>;
++			read-only;
++		};
++
++		partition@30000 {
++			label = "u-boot-env";
++			reg = <0x30000 0x10000>;
++			read-only;
++		};
++
++		factory: partition@40000 {
++			label = "factory";
++			reg = <0x40000 0x10000>;
++			read-only;
++		};
++
++		partition@50000 {
++			label = "firmware";
++			reg = <0x50000 0xfb0000>;
++		};
++	};
++};
++
++&pcie {
++	status = "okay";
++
++	pcie1 {
++		mt76@1,0 {
++			reg = <0x0000 0 0 0 0>;
++			device_type = "pci";
++			mediatek,mtd-eeprom = <&factory 0x8000>;
++			ieee80211-freq-limit = <5000000 6000000>;
++		};
++	};
++
++	pcie0 {
++		mt76@2,0 {
++			reg = <0x0000 0 0 0 0>;
++			device_type = "pci";
++			mediatek,mtd-eeprom = <&factory 0x0000>;
++			ieee80211-freq-limit = <2400000 2500000>;
++		};
++	};
++};
++
++&pinctrl {
++    state_default: pinctrl0 {
++        gpio {
++            ralink,group = "i2s", "pwm0", "pwm1", "uart2", "sdmode";
++            ralink,function = "gpio";
++        };
++    };
++};
++
++&wmac {
++	status = "okay";
++};
++
++&ethernet {
++	mtd-mac-address = <&factory 0xe000>;
++};
+diff --git a/target/linux/ramips/image/mt76x8.mk b/target/linux/ramips/image/mt76x8.mk
+index 15bc1ee7031..82b685cdebe 100644
+--- a/target/linux/ramips/image/mt76x8.mk
++++ b/target/linux/ramips/image/mt76x8.mk
+@@ -2,17 +2,6 @@
+ # MT76x8 Profiles
+ #
+ 
+-DEVICE_VARS += SERCOMM_KERNEL_OFFSET SERCOMM_HWID SERCOMM_HWVER SERCOMM_SWVER
+-
+-define Build/mksercommfw
+-	$(STAGING_DIR_HOST)/bin/mksercommfw \
+-		$@ \
+-		$(SERCOMM_KERNEL_OFFSET) \
+-		$(SERCOMM_HWID) \
+-		$(SERCOMM_HWVER) \
+-		$(SERCOMM_SWVER)
+-endef
+-
+ define Device/tplink
+   TPLINK_FLASHLAYOUT :=
+   TPLINK_HWID :=
+@@ -65,17 +54,9 @@ define Device/hc5661a
+   DTS := HC5661A
+   IMAGE_SIZE := $(ralink_default_fw_size_16M)
+   DEVICE_TITLE := HiWiFi HC5661A
+-  DEVICE_PACKAGES := kmod-sdhci-mt7620
+ endef
+ TARGET_DEVICES += hc5661a
+ 
+-define Device/hiwifi_hc5861b
+-  DTS := HC5861B
+-  IMAGE_SIZE := 15808k
+-  DEVICE_TITLE := HiWiFi HC5861B
+-endef
+-TARGET_DEVICES += hiwifi_hc5861b
+-
+ define Device/LinkIt7688
+   DTS := LINKIT7688
+   IMAGE_SIZE := $(ralink_default_fw_size_32M)
+@@ -109,23 +90,6 @@ define Device/mt7628
+ endef
+ TARGET_DEVICES += mt7628
+ 
+-define Device/netgear_r6120
+-  DTS := R6120
+-  BLOCKSIZE := 64k
+-  IMAGE_SIZE := $(ralink_default_fw_size_16M)
+-  DEVICE_TITLE := Netgear AC1200 R6120
+-  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci
+-  SERCOMM_KERNEL_OFFSET := 90000
+-  SERCOMM_HWID := CGQ
+-  SERCOMM_HWVER := A001
+-  SERCOMM_SWVER := 0040
+-  IMAGES += factory.img
+-  IMAGE/default := append-kernel | pad-to $$$$(BLOCKSIZE)| append-rootfs | pad-rootfs
+-  IMAGE/sysupgrade.bin := $$(IMAGE/default) | append-metadata | check-size $$$$(IMAGE_SIZE)
+-  IMAGE/factory.img := $$(IMAGE/default) | mksercommfw
+-endef
+-TARGET_DEVICES += netgear_r6120
+-
+ define Device/omega2
+   DTS := OMEGA2
+   IMAGE_SIZE := $(ralink_default_fw_size_16M)
+@@ -150,18 +114,13 @@ define Device/pbr-d1
+ endef
+ TARGET_DEVICES += pbr-d1
+ 
+-define Device/tplink_tl-wa801nd-v5
+-  $(Device/tplink)
+-  DTS := TL-WA801NDV5
+-  IMAGE_SIZE := 7808k
+-  DEVICE_TITLE := TP-Link TL-WA801ND v5
+-  TPLINK_FLASHLAYOUT := 8Mmtk
+-  TPLINK_HWID := 0x08010005
+-  TPLINK_HWREV := 0x1
+-  TPLINK_HWREVADD := 0x5
+-  TPLINK_HVERSION := 3
++define Device/q500-mt7628an
++  DTS := Q500-MT7628AN
++  IMAGE_SIZE := $(ralink_default_fw_size_16M)
++  DEVICE_TITLE := Q500-MT7628AN
++  DEVICE_PACKAGES:= kmod-usb2 kmod-usb-ohci
+ endef
+-TARGET_DEVICES += tplink_tl-wa801nd-v5
++TARGET_DEVICES += q500-mt7628an
+ 
+ define Device/tl-wr840n-v4
+   $(Device/tplink)
+@@ -231,20 +190,6 @@ define Device/tplink_c50-v3
+ endef
+ TARGET_DEVICES += tplink_c50-v3
+ 
+-define Device/tplink_tl-mr3020-v3
+-  $(Device/tplink)
+-  DTS := TL-MR3020V3
+-  IMAGE_SIZE := 7808k
+-  DEVICE_TITLE := TP-Link TL-MR3020 v3
+-  TPLINK_FLASHLAYOUT := 8Mmtk
+-  TPLINK_HWID := 0x30200003
+-  TPLINK_HWREV := 0x3
+-  TPLINK_HWREVADD := 0x3
+-  TPLINK_HVERSION := 3
+-  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci kmod-usb-ledtrig-usbport
+-endef
+-TARGET_DEVICES += tplink_tl-mr3020-v3
+-
+ define Device/tplink_tl-mr3420-v5
+   $(Device/tplink)
+   DTS := TL-MR3420V5
+@@ -375,15 +320,3 @@ define Device/zbtlink_zbt-we1226
+   DEVICE_TITLE := ZBTlink ZBT-WE1226
+ endef
+ TARGET_DEVICES += zbtlink_zbt-we1226
+-
+-define Device/zyxel_keenetic-extra-ii
+-  DTS := ki_rb
+-  IMAGE_SIZE := 14912k
+-  BLOCKSIZE := 64k
+-  DEVICE_TITLE := ZyXEL Keenetic Extra II
+-  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci kmod-usb-ledtrig-usbport
+-  IMAGES += factory.bin
+-  IMAGE/factory.bin := $$(IMAGE/sysupgrade.bin) | pad-to $$$$(BLOCKSIZE) | \
+-	check-size $$$$(IMAGE_SIZE) | zyimage -d 6162 -v "ZyXEL Keenetic Extra II"
+-endef
+-TARGET_DEVICES += zyxel_keenetic-extra-ii

@@ -1,0 +1,99 @@
+  _______                     ________        __
+ |       |.-----.-----.-----.|  |  |  |.----.|  |_
+ |   -   ||  _  |  -__|     ||  |  |  ||   _||   _|
+ |_______||   __|_____|__|__||________||__|  |____|
+          |__| W I R E L E S S   F R E E D O M
+ -----------------------------------------------------
+ OpenWrt 18.06.1, r7258-5eb055306f
+ -----------------------------------------------------
+=== WARNING! =====================================
+There is no root password defined on this device!
+Use the "passwd" command to set up a new password
+in order to prevent unauthorized SSH logins.
+--------------------------------------------------
+root@OpenWrt:~# cat /proc/interrupts
+           CPU0       
+  5:       3642      MIPS   5  10100000.ethernet
+  7:     395878      MIPS   7  timer
+ 25:          7      INTC  17  esw
+ 26:       1472      INTC  18  ehci_hcd:usb1, ohci_hcd:usb2
+ 28:        368      INTC  20  ttyS0
+ERR:          0
+
+
+  _______                     ________        __
+ |       |.-----.-----.-----.|  |  |  |.----.|  |_
+ |   -   ||  _  |  -__|     ||  |  |  ||   _||   _|
+ |_______||   __|_____|__|__||________||__|  |____|
+          |__| W I R E L E S S   F R E E D O M
+ -----------------------------------------------------
+ OpenWrt 18.06-SNAPSHOT, r7288-a662d6f6bc
+ -----------------------------------------------------
+root@OpenWrt:~# cat /proc/interrupts
+           CPU0       
+  5:       1199      MIPS   5  10100000.ethernet
+  7:      20199      MIPS   7  timer
+ 25:          7      INTC  17  esw
+ 28:        269      INTC  20  ttyS0
+ERR:          0
+root@OpenWrt:~# 
+
+     _________
+    /        /\      _    ___ ___  ___
+   /  LE    /  \    | |  | __|   \| __|
+  /    DE  /    \   | |__| _|| |) | _|
+ /________/  LE  \  |____|___|___/|___|                      lede-project.org
+ \        \   DE /
+  \    LE  \    /  -----------------------------------------------------------
+   \  DE    \  /    Reboot (17.01.6, r3979-2252731af4)
+    \________\/    -----------------------------------------------------------
+
+=== WARNING! =====================================
+There is no root password defined on this device!
+Use the "passwd" command to set up a new password
+in order to prevent unauthorized SSH logins.
+--------------------------------------------------
+root@LEDE:/# 
+root@LEDE:/# cat /proc/interrupts
+           CPU0       
+  5:        190      MIPS   5  10100000.ethernet
+  6:         21      MIPS   6  mt7603e
+  7:      30744      MIPS   7  timer
+ 25:          7      INTC  17  esw
+ 26:          1      INTC  18  ehci_hcd:usb1, ohci_hcd:usb2
+ 28:         92      INTC  20  serial
+ERR:          0
+root@LEDE:/# 
+
+admin@AFOUNDRY-4FF830:~# cat /etc/banner
+  _______                     ________        __
+ |       |.-----.-----.-----.|  |  |  |.----.|  |_
+ |   -   ||  _  |  -__|     ||  |  |  ||   _||   _|
+ |_______||   __|_____|__|__||________||__|  |____|
+          |__| W I R E L E S S   F R E E D O M
+ -----------------------------------------------------
+ BARRIER BREAKER (Barrier Breaker, r37)
+ -----------------------------------------------------
+  * 1/2 oz Galliano         Pour all ingredients into
+  * 4 oz cold Coffee        an irish coffee mug filled
+  * 1 1/2 oz Dark Rum       with crushed ice. Stir.
+  * 2 tsp. Creme de Cacao
+ -----------------------------------------------------
+ MTK OpenWrt SDK V3.4
+ revision :  benchmark : APSoC SDK 5.0.1.0
+ kernel : 144992
+ -----------------------------------------------------
+admin@AFOUNDRY-4FF830:~# cat /proc/interrupts
+           CPU0       
+  2:       2692    Ralink  rai0
+  3:         53    Ralink  eth0
+  4:       2749    Ralink  ra0
+  5:      39867    Ralink  timer
+  6:          0    Ralink  ralink_gpio
+ 17:          6    Ralink  Ralink_ESW
+ 18:       2056    Ralink  ehci_hcd:usb1, ohci_hcd:usb2
+ 20:        270    Ralink  serial
+ERR:          0
+admin@AFOUNDRY-4FF830:~# 
+
+

@@ -1,0 +1,155 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+    <meta name="renderer" content="webkit|ie-stand|ie-comp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <link rel="shortcut icon" type="image/ico" href="/login/favicon.ico" />
+    <title>LOGIN</title>
+    <link href="/login/styles.css" type="text/css" media="screen" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="/jquery/jquery-ui.min.css" />
+    <script type="text/javascript" src="/jquery/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="/jquery/jquery-ui.min.js"></script>
+    <style type="text/css">
+        
+    #left
+    {
+        /*background: url(../sdmenu/logoback.gif) repeat-x;*/
+        background: url(../sdmenu/logo.png);
+        /*height: 68px;*/
+        height: 96px;
+        /*width: 200px;*/
+        width: 300px;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+    }
+    #left1
+    {
+        background:url(../sdmenu/leftblock.gif) no-repeat;
+        /*height: 68px;*/
+        height: 96px;
+        width: 18px;
+        position: absolute;
+        top: 0px;
+        /*left: 200px;*/
+        left: 300px;
+    }
+    /*
+    #center_y
+    {
+        background:url(../sdmenu/midblock.gif) repeat-x;
+        height: 96px;
+        top: 0px;
+        margin-right: 18px;
+        margin-left: 318px;
+    }
+    */
+    #center
+    {
+        background:url(../sdmenu/midblock.gif) repeat-x;
+        height: 96px;
+        top: 0px;
+        left: 318px;
+        right: 0px;
+        position: absolute;
+    }
+    </style>
+    <script type="text/javascript" src="/farm/global.js"></script>
+    <!--[if lte IE 7]><style>.support-note{display:block;}</style>
+    <![endif]-->
+
+    <script type="text/javascript" language="javascript">
+    // <![CDATA[
+        $(document).ready(function() {
+
+            $(".logininput").blur(function() {
+                if ($(this).val() == "") {
+                    $(this).css("border-color", "red");
+                                    }
+                else
+                    $(this).css("border-color", "#D9D6C4");
+            })
+
+            var htmlobj;
+            var languageobj;
+            //var languageid = "cn";
+            var languageid = "en";
+            var deviceid = "70:3A:D8:4F:F8:30"
+
+            if ( IsEmpty( top.langid ) == false )
+            {
+                top.Reload();
+            }
+            htmlobj=$.ajax( { url:"/lang/"+languageid+".js",dataType:"json", async:false } );
+            languageobj = eval( "(" + htmlobj.responseText + ")" );
+            window.document.title = languageobj.login.title;
+            document.getElementById("not_support").innerHTML = languageobj.login.not_support;
+            document.getElementById("in_title").innerHTML = languageobj.login.title;
+            document.getElementById("in_user_name").innerHTML = languageobj.login.user;
+            document.getElementById("in_user_password").innerHTML = languageobj.login.password;
+            document.getElementById("bt_login").innerHTML = languageobj.login.login;
+            document.getElementById("in_remember").innerHTML = languageobj.login.remember;
+            document.getElementById("username").focus();
+            if ( UrlParam( "warn" ) == "loginfailed" )
+            {
+                document.getElementById("in_title").innerHTML = languageobj.login.warn;
+                document.getElementById("in_title").style.color = "red";
+            }
+
+            function UrlParam( paramName )
+            {
+                var oregex = new RegExp( '[\?&]' + paramName + '=([^&]+)', 'i' );
+                var oMatch = oregex.exec( window.location.search );
+
+                if ( oMatch && oMatch.length > 1 )
+                  return decodeURIComponent( oMatch[1] );
+                else
+                  return '';
+            }
+            
+        });
+    // ]]>
+    </script>
+
+
+</head>
+<body id="login" style="width:100%">
+
+    <div id="left"></div>
+    <div id="left1"></div>
+    <div id="center"></div>
+
+    <div align="center" style="margin-top:220px">
+    <div id="header" style="display:none"></div>
+    <div id="wrappertop"></div>
+    <div id="wrapper">
+        <div id="content">
+            <form name="form1" method="post" action="/action/login">
+            <fieldset class="form">
+                <div id="darkbanner"><h2 id="in_title" style="color: #000">Login  System</h2></div>
+                <p>
+                    <label class="loginlabel" id="in_user_name">Username:</label>
+                    <input class="logininput ui-keyboard-input ui-widget-content ui-corner-all" name="username" id="username" type="text" value="" />
+                </p>
+                <p>
+                    <label class="loginlabel" id="in_user_password">Password:</label>
+                    <span>
+                        <input class="logininput ui-keyboard-input ui-widget-content ui-corner-all" name="password" id="password" type="password" />
+                    </span>
+                </p>
+                <button id="loginbtn" type="submit" class="positive" name="Submit"><img src="/login/key.png" alt="Announcement" /><span id="bt_login">Login</span></button>
+                <ul id="forgottenpassword" style="display:none">
+                    <li class="boldtext"></li>
+                    <li><input id="remember" type="checkbox" name="remember" id="rememberMe"><label id="in_remember">Remember me</label></li>
+                </ul>
+            </fieldset>
+            </form>
+        </div>
+    </div>
+    <div id="wrapperbottom_branding"></div>
+    <div class="support-note" id="not_support" ></div>
+    </div>
+
+
+</body>

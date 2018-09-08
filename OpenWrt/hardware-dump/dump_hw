@@ -1,0 +1,534 @@
+
+
+cat proc/mt7628/gmac
+
+
+FE_INT_ENABLE  : 0x50000000
+TxRing PktCnt: 0/512
+RxRing PktCnt: 0/512
+
+DLY_INT_CFG    : 0x84048404
+TX_BASE_PTR0   : 0x029f2000
+TX_MAX_CNT0    : 0x00000200
+TX_CTX_IDX0	: 0x00000121
+TX_DTX_IDX0	: 0x00000121
+TX_BASE_PTR1   : 0x00000000
+TX_MAX_CNT1    : 0x00000000
+TX_CTX_IDX1	: 0x00000000
+TX_DTX_IDX1	: 0x00000000
+TX_BASE_PTR2   : 0x00000000
+TX_MAX_CNT2    : 0x00000000
+TX_CTX_IDX2	: 0x00000000
+TX_DTX_IDX2	: 0x00000000
+TX_BASE_PTR3   : 0x00000000
+TX_MAX_CNT3    : 0x00000000
+TX_CTX_IDX3	: 0x00000000
+TX_DTX_IDX3	: 0x00000000
+RX_BASE_PTR0   : 0x029f4000
+RX_MAX_CNT0    : 0x00000200
+RX_CALC_IDX0   : 0x00000194
+RX_DRX_IDX0    : 0x00000195
+
+
+cat proc/mt7628/esw_cnt
+
+		  <<CPU>>			 
+		    |				 
++-----------------------------------------------+
+|		  <<PDMA>>		        |
++-----------------------------------------------+
+                      ^                          
+                      | Port6 Rx:00004385 Good Pkt   
+                      | Port6 Tx:00004483 Good Pkt   
++---------------------v-------------------------+
+|		      P6		        |
+|  	     <<10/100 Embedded Switch>>	        |
+|     P0    P1    P2     P3     P4     P5       |
++-----------------------------------------------+
+       |     |     |     |       |      |        
+Port0 Good Pkt Cnt: RX=00000000 Tx=00000000 (Bad Pkt Cnt: Rx=00000000 Tx=00000000)
+Port1 Good Pkt Cnt: RX=00002441 Tx=00003261 (Bad Pkt Cnt: Rx=00000000 Tx=00000000)
+Port2 Good Pkt Cnt: RX=00000000 Tx=00000000 (Bad Pkt Cnt: Rx=00000000 Tx=00000000)
+Port3 Good Pkt Cnt: RX=00000000 Tx=00000000 (Bad Pkt Cnt: Rx=00000000 Tx=00000000)
+Port4 Good Pkt Cnt: RX=00002042 Tx=00001112 (Bad Pkt Cnt: Rx=00000000 Tx=00000000)
+Port5 Good Pkt Cnt: RX=00000000 Tx=00000000 (Bad Pkt Cnt: Rx=00000000 Tx=00000000)
+
+
+cat proc/mt7628/cp0
+CP0 Register dump --
+CP0_INDEX	: 0x0000001d
+CP0_RANDOM	: 0x0000001b
+CP0_ENTRYLO0	: 0x00044fda
+CP0_ENTRYLO1	: 0x0004501a
+CP0_CONF	: 0x0004501a
+CP0_CONTEXT	: 0x003bb060
+CP0_PAGEMASK	: 0x00000000
+CP0_WIRED	: 0x00000000
+CP0_INFO	: 0x2000000f
+CP0_BADVADDR	: 0x7760d848
+CP0_COUNT	: 0xbeb84d2d
+CP0_ENTRYHI	: 0x7760c089
+CP0_COMPARE	: 0xbeba34d7
+CP0_STATUS	: 0x1100ff01
+CP0_CAUSE	: 0x10800020
+CP0_EPC	: 0x7760d868
+CP0_PRID	: 0x00019655
+CP0_CONFIG	: 0x80040483
+CP0_LLADDR	: 0xffffffff
+CP0_WATCHLO	: 0x00000000
+CP0_WATCHHI	: 0x80000ff8
+CP0_XCONTEXT	: 0xffffffff
+CP0_FRAMEMASK	: 0xffffffff
+CP0_DIAGNOSTIC	: 0xffffffff
+CP0_DEBUG	: 0x8201ec37
+CP0_DEPC	: 0x03f7f6f9
+CP0_PERFORMANCE	: 0x80000000
+CP0_ECC	: 0x00006000
+CP0_CACHEERR	: 0x514baec0
+CP0_TAGLO	: 0x00000000
+CP0_TAGHI	: 0xffffffff
+CP0_ERROREPC	: 0x83fc9e00
+CP0_DESAVE	: 0xb68caf63
+
+
+
+cat proc/iomem
+00000000-03ffffff : System RAM
+  00000000-002a79c7 : Kernel code
+  002a79c8-00358e3f : Kernel data
+101c0000-101c0fff : ehci-platform
+  101c0000-101c0fff : ehci-platform
+101c1000-101c1fff : ohci-platform
+  101c1000-101c1fff : ohci-platform
+20000000-2fffffff : PCI MEM1
+  20000000-200fffff : PCI Bus 0000:01
+    20000000-200fffff : 0000:01:00.0
+      20000000-200fffff : 0000:01:00.0
+  20100000-201fffff : PCI Bus 0000:01
+    20100000-2010ffff : 0000:01:00.0
+  20200000-2020ffff : 0000:00:00.0
+
+
+
+cat proc/ioports 
+10160000-1016ffff : PCI I/O1
+
+ cat /proc/interrupts
+           CPU0       
+  2:      61294    Ralink  rai0
+  3:       6689    Ralink  eth0
+  4:      61468    Ralink  ra0
+  5:     790245    Ralink  timer
+  6:          0    Ralink  ralink_gpio
+ 17:          6    Ralink  Ralink_ESW
+ 18:      43158    Ralink  ehci_hcd:usb1, ohci_hcd:usb2
+ 20:      12501    Ralink  serial
+ERR:          0
+
+
+
+lspci -v 
+00:00.0 PCI bridge: MEDIATEK Corp. Device 0801 (rev 01) (prog-if 00 [Normal decode])
+	Flags: bus master, fast devsel, latency 0
+	Memory at 20200000 (32-bit, non-prefetchable) [size=64K]
+	Bus: primary=00, secondary=01, subordinate=01, sec-latency=0
+	Memory behind bridge: 20000000-200fffff
+	Prefetchable memory behind bridge: 20100000-201fffff
+	Capabilities: [40] Power Management version 3
+	Capabilities: [50] MSI: Enable- Count=1/1 Maskable- 64bit+
+	Capabilities: [70] Express Root Port (Slot-), MSI 00
+	Capabilities: [100] Advanced Error Reporting
+	Capabilities: [140] Virtual Channel
+lspci: Unable to load libkmod resources: error -12
+
+01:00.0 Network controller: MEDIATEK Corp. MT7662E 802.11ac PCI Express Wireless Network Adapter
+	Subsystem: MEDIATEK Corp. MT7662E 802.11ac PCI Express Wireless Network Adapter
+	Flags: bus master, fast devsel, latency 0, IRQ 2
+	Memory at 20000000 (64-bit, non-prefetchable) [size=1M]
+	[virtual] Expansion ROM at 20100000 [disabled] [size=64K]
+	Capabilities: [40] Power Management version 3
+	Capabilities: [50] MSI: Enable- Count=1/1 Maskable- 64bit+
+	Capabilities: [70] Express Endpoint, MSI 00
+	Capabilities: [100] Advanced Error Reporting
+	Capabilities: [148] Device Serial Number 00-00-00-00-00-00-00-00
+	Capabilities: [158] Latency Tolerance Reporting
+	Capabilities: [160] L1 PM Substates
+	Kernel driver in use: rt2860
+
+
+lspci
+00:00.0 PCI bridge: MEDIATEK Corp. Device 0801 (rev 01)
+01:00.0 Network controller: MEDIATEK Corp. MT7662E 802.11ac PCI Express Wireless Network Adapter
+
+lspci -nn
+00:00.0 PCI bridge [0604]: MEDIATEK Corp. Device [14c3:0801] (rev 01)
+01:00.0 Network controller [0280]: MEDIATEK Corp. MT7662E 802.11ac PCI Express Wireless Network Adapter [14c3:7662]
+
+lspci -mm
+00:00.0 "PCI bridge" "MEDIATEK Corp." "Device 0801" -r01 "" ""
+01:00.0 "Network controller" "MEDIATEK Corp." "MT7662E 802.11ac PCI Express Wireless Network Adapter" "MEDIATEK Corp." "MT7662E 802.11ac PCI Express Wireless Network Adapter"
+
+lspci -kk
+00:00.0 PCI bridge: MEDIATEK Corp. Device 0801 (rev 01)
+lspci: Unable to load libkmod resources: error -12
+01:00.0 Network controller: MEDIATEK Corp. MT7662E 802.11ac PCI Express Wireless Network Adapter
+	Subsystem: MEDIATEK Corp. MT7662E 802.11ac PCI Express Wireless Network Adapter
+	Kernel driver in use: rt2860
+
+lspci -x
+00:00.0 PCI bridge: MEDIATEK Corp. Device 0801 (rev 01)
+00: c3 14 01 08 07 00 10 00 01 00 04 06 14 00 01 00
+10: 00 00 00 00 00 00 20 20 00 01 01 00 f0 00 00 00
+20: 00 20 00 20 10 20 10 20 00 00 00 00 00 00 00 00
+30: 00 00 00 00 40 00 00 00 00 00 00 00 00 01 00 00
+
+01:00.0 Network controller: MEDIATEK Corp. MT7662E 802.11ac PCI Express Wireless Network Adapter
+00: c3 14 62 76 06 00 10 00 00 00 80 02 14 00 00 00
+10: 04 00 00 20 00 00 00 00 00 00 00 00 00 00 00 00
+20: 00 00 00 00 00 00 00 00 00 00 00 00 c3 14 62 76
+30: 00 00 00 00 40 00 00 00 00 00 00 00 02 01 00 00
+
+###
+#########################################################################################
+###
+
+ lspci -xx
+00:00.0 PCI bridge: MEDIATEK Corp. Device 0801 (rev 01)
+00: c3 14 01 08 07 00 10 00 01 00 04 06 14 00 01 00
+10: 00 00 00 00 00 00 20 20 00 01 01 00 f0 00 00 00
+20: 00 20 00 20 10 20 10 20 00 00 00 00 00 00 00 00
+30: 00 00 00 00 40 00 00 00 00 00 00 00 00 01 00 00
+
+01:00.0 Network controller: MEDIATEK Corp. MT7662E 802.11ac PCI Express Wireless Network Adapter
+00: c3 14 62 76 06 00 10 00 00 00 80 02 14 00 00 00
+10: 04 00 00 20 00 00 00 00 00 00 00 00 00 00 00 00
+20: 00 00 00 00 00 00 00 00 00 00 00 00 c3 14 62 76
+30: 00 00 00 00 40 00 00 00 00 00 00 00 02 01 00 00
+
+###
+#########################################################################################
+###
+
+lspci -xxx
+00:00.0 PCI bridge: MEDIATEK Corp. Device 0801 (rev 01)
+00: c3 14 01 08 07 00 10 00 01 00 04 06 14 00 01 00
+10: 00 00 00 00 00 00 20 20 00 01 01 00 f0 00 00 00
+20: 00 20 00 20 10 20 10 20 00 00 00 00 00 00 00 00
+30: 00 00 00 00 40 00 00 00 00 00 00 00 00 01 00 00
+40: 01 50 c3 5b 00 00 00 00 00 00 00 00 00 00 00 00
+50: 05 70 80 00 00 00 00 00 00 00 00 00 00 00 00 00
+60: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+70: 10 00 42 00 00 80 00 00 10 20 00 00 11 3c 13 00
+80: 08 00 11 30 00 00 00 00 c0 03 40 00 00 00 00 00
+90: 00 00 00 00 10 00 00 00 00 00 00 00 02 00 00 00
+a0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+b0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+c0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+d0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+e0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+f0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+
+01:00.0 Network controller: MEDIATEK Corp. MT7662E 802.11ac PCI Express Wireless Network Adapter
+00: c3 14 62 76 06 00 10 00 00 00 80 02 14 00 00 00
+10: 04 00 00 20 00 00 00 00 00 00 00 00 00 00 00 00
+20: 00 00 00 00 00 00 00 00 00 00 00 00 c3 14 62 76
+30: 00 00 00 00 40 00 00 00 00 00 00 00 02 01 00 00
+40: 01 50 c3 c9 00 00 00 00 00 00 00 00 00 00 00 00
+50: 05 70 80 00 00 00 00 00 00 00 00 00 00 00 00 00
+60: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+70: 10 00 02 00 c0 8f 00 00 10 20 10 00 11 dc 47 00
+80: 00 00 11 10 00 00 00 00 00 00 00 00 00 00 00 00
+90: 00 00 00 00 1f 00 00 00 00 00 00 00 02 00 00 00
+a0: 02 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00
+b0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+c0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+d0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+e0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+f0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+
+###
+#########################################################################################
+###
+
+
+cat /proc/cmdline
+console=ttyS1,57600n8 root=/dev/mtdblock5 rootfstype=squashfs,jffs2
+
+cat /proc/interrupts
+
+           CPU0       
+  2:       2692    Ralink  rai0
+  3:         53    Ralink  eth0
+  4:       2749    Ralink  ra0
+  5:      39867    Ralink  timer
+  6:          0    Ralink  ralink_gpio
+ 17:          6    Ralink  Ralink_ESW
+ 18:       2056    Ralink  ehci_hcd:usb1, ohci_hcd:usb2
+ 20:        270    Ralink  serial
+ERR:          0
+
+
+cat /proc/devices
+
+Character devices:
+  1 mem
+  2 pty
+  3 ttyp
+  4 ttyS
+  5 /dev/tty
+  5 /dev/console
+  5 /dev/ptmx
+ 10 misc
+ 21 sg
+ 90 mtd
+108 ppp
+128 ptm
+136 pts
+180 usb
+189 usb_device
+251 apsoc_nvram
+252 gpio
+253 rdm0
+254 watchdog
+
+Block devices:
+259 blkext
+  8 sd
+ 31 mtdblock
+ 65 sd
+ 66 sd
+ 67 sd
+ 68 sd
+ 69 sd
+ 70 sd
+ 71 sd
+128 sd
+129 sd
+130 sd
+131 sd
+132 sd
+133 sd
+134 sd
+135 sd
+
+cat /proc/mtd
+dev:    size   erasesize  name
+mtd0: 01000000 00010000 "ALL"
+mtd1: 00030000 00010000 "Bootloader"
+mtd2: 00010000 00010000 "Config"
+mtd3: 00010000 00010000 "Factory"
+mtd4: 00fb0000 00010000 "firmware"
+mtd5: 00e789d5 00010000 "rootfs"
+mtd6: 00920000 00010000 "rootfs_data"
+
+
+ifconfig -a
+apcli0    Link encap:Ethernet  HWaddr 72:3A:D8:0F:F8:30  
+          BROADCAST MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+apcli1    Link encap:Ethernet  HWaddr 72:3A:D8:0F:F8:31  
+          BROADCAST MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+apclii0   Link encap:Ethernet  HWaddr 72:3A:D8:4B:F8:38  
+          BROADCAST MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+eth0      Link encap:Ethernet  HWaddr 70:3A:D8:4F:F8:36  
+          inet6 addr: fe80::723a:d8ff:fe4f:f836/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:62 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:31 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:11239 (10.9 KiB)  TX bytes:4581 (4.4 KiB)
+          Interrupt:3 
+
+eth0.1    Link encap:Ethernet  HWaddr 70:3A:D8:4F:F8:36  
+          inet6 addr: fe80::723a:d8ff:fe4f:f836/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:26 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:8 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:3228 (3.1 KiB)  TX bytes:748 (748.0 B)
+
+eth0.2    Link encap:Ethernet  HWaddr 70:3A:D8:4F:F8:36  
+          inet addr:192.168.8.125  Bcast:192.168.8.255  Mask:255.255.255.0
+          inet6 addr: fe80::723a:d8ff:fe4f:f836/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:36 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:13 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:6895 (6.7 KiB)  TX bytes:1804 (1.7 KiB)
+
+lan       Link encap:Ethernet  HWaddr 70:3A:D8:4F:F8:30  
+          inet addr:192.168.2.1  Bcast:192.168.2.255  Mask:255.255.255.0
+          inet6 addr: fe80::849:aeff:fe55:8748/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:14 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:5 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:888 (888.0 B)  TX bytes:450 (450.0 B)
+
+lo        Link encap:Local Loopback  
+          inet addr:127.0.0.0  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+ra0       Link encap:Ethernet  HWaddr 70:3A:D8:4F:F8:30  
+          inet6 addr: fe80::723a:d8ff:fe4f:f830/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+          Interrupt:4 
+
+ra1       Link encap:Ethernet  HWaddr 72:3A:D8:5F:F8:30  
+          BROADCAST MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+ra2       Link encap:Ethernet  HWaddr 72:3A:D8:6F:F8:30  
+          BROADCAST MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+ra3       Link encap:Ethernet  HWaddr 72:3A:D8:7F:F8:30  
+          BROADCAST MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+rai0      Link encap:Ethernet  HWaddr 70:3A:D8:4F:F8:38  
+          inet6 addr: fe80::723a:d8ff:fe4f:f838/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+          Interrupt:2 
+
+rai1      Link encap:Ethernet  HWaddr 72:3A:D8:48:F8:38  
+          BROADCAST MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+rai2      Link encap:Ethernet  HWaddr 72:3A:D8:49:F8:38  
+          BROADCAST MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+rai3      Link encap:Ethernet  HWaddr 72:3A:D8:4A:F8:38  
+          BROADCAST MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+teql0     Link encap:UNSPEC  HWaddr 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00  
+          NOARP  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:100 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+wds0      Link encap:Ethernet  HWaddr 70:3A:D8:4F:F8:30  
+          BROADCAST MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+wds1      Link encap:Ethernet  HWaddr 70:3A:D8:4F:F8:30  
+          BROADCAST MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+wds2      Link encap:Ethernet  HWaddr 70:3A:D8:4F:F8:30  
+          BROADCAST MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+wds3      Link encap:Ethernet  HWaddr 70:3A:D8:4F:F8:30  
+          BROADCAST MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+wdsi0     Link encap:Ethernet  HWaddr 70:3A:D8:4F:F8:38  
+          BROADCAST MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+wdsi1     Link encap:Ethernet  HWaddr 70:3A:D8:4F:F8:38  
+          BROADCAST MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+wdsi2     Link encap:Ethernet  HWaddr 70:3A:D8:4F:F8:38  
+          BROADCAST MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+wdsi3     Link encap:Ethernet  HWaddr 70:3A:D8:4F:F8:38  
+          BROADCAST MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+ls /sys/class/net
+apcli0   eth0     lan      ra1      rai0     rai3     wds1     wdsi0    wdsi3
+apcli1   eth0.1   lo       ra2      rai1     teql0    wds2     wdsi1
+apclii0  eth0.2   ra0      ra3      rai2     wds0     wds3     wdsi2
+
+
+brctl show
+bridge name	bridge id		STP enabled	interfaces
+lan		8000.703ad84ff830	no		eth0.1
+							ra0
+							ra1
+							ra2
+							ra3
+							rai0
+							rai1
+							rai2
+							rai3
+							wds0
+							wdsi0
+
+
